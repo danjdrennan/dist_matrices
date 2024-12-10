@@ -41,6 +41,21 @@ Two versions of the implementation are provided. One uses a naive implementation
 of Euclidean distance. The other relies on `np.linalg.norm` to calculate norm
 automatically.
 
+The `dist.py` file contains two implementations of the `cdist` function
+available through `scipy`, defined as `dist` and `dist2` with the same call
+signature.
+
+## Run code
+
+To run the code, create an environment with `numpy` and `scipy` installed. The
+`dist.py` script can then be run to try the implementations using
+
+```python
+python dist.py
+```
+
+Or simply copy this script verbatim into a Python environment and use it there.
+
 ## Batch dimensions
 
 The implementation supports broadcasting over batch dimensions explicitly as
