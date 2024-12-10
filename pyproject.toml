@@ -1,0 +1,15 @@
+[project]
+name = "dist_matrices"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Dan Drennan", email = "danjdrennan@gmail.com"},
+]
+dependencies = ["numpy>=2.2.0", "scipy>=1.14.1", "ipython>=8.30.0"]
+requires-python = "==3.12.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
