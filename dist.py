@@ -24,6 +24,9 @@ def batched_diffs(x1: A, x2: A) -> A:
     return x1[..., None, :] - x2[..., None, :, :]
 
 
+# NOTE: The batch argument can be dropped without loss of generality. It is
+# provided in this version only to demonstrate the results are consistent with
+# the non-batched version.
 def dist(x1: A, x2: A, batch: bool = False) -> A:
     d = batched_diffs(x1, x2) if batch else diffs(x1, x2)
     d = np.square(d)
@@ -33,6 +36,7 @@ def dist(x1: A, x2: A, batch: bool = False) -> A:
     return dists
 
 
+# NOTE: As above
 def dist2(x1: A, x2: A, batch: bool = False) -> A:
     d = batched_diffs(x1, x2) if batch else diffs(x1, x2)
     dists: A = np.linalg.norm(d, axis=-1)
@@ -96,7 +100,11 @@ def main():
     # Now demo behavior with batched diffs
     # Here we skip cdist since it doesn't support batched inputs
     batched_fns: list[Fn] = [
-        lambda x1, x2: np.stack([cdist(x1[i], x2[i]) for i in range(x1.shape[0])]),
+        lambda x1, x2: (
+            np.stack([cdist(x1[i], x2[i]) for i in range(x1.shape[0])])
+            if x1.ndim == 3
+            else cdist(x1, x2)
+        ),
         lambda x1, x2: dist(x1, x2, batch=True),
         lambda x1, x2: dist2(x1, x2, batch=True),
     ]
@@ -104,6 +112,9 @@ def main():
         x1 = rng.random((n.batch, n.n1, di)).astype(dtype)
         x2 = rng.random((n.batch, n.n2, di)).astype(dtype)
         cmp_dists(x1, x2, batched_fns, n, dtype, atol)
+
+        # Also show this works with non-batched inputs by indexing into the batch dim
+        cmp_dists(x1[0], x2[0], batched_fns, n, dtype, atol)
 
 
 if __name__ == "__main__":
