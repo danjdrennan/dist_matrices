@@ -16,6 +16,15 @@ class Dims(NamedTuple):
     n2: int
 
 
+def batch_centering(x1: A, x2: A) -> tuple[A, A]:
+    n1, n2 = np.prod(x1.shape[-2]), np.prod(x2.shape[-2])
+    m1: A = x1.mean(axis=tuple(_ for _ in range(x1.ndim - 1)))
+    m2: A = x2.mean(axis=tuple(_ for _ in range(x2.ndim - 1)))
+    m = (n1 * m1 + n2 * m2) / (n1 + n2)
+
+    return x1 - m, x2 - m
+
+
 def diffs(x1: A, x2: A) -> A:
     return x1[:, None] - x2[None, :]
 
@@ -28,6 +37,7 @@ def batched_diffs(x1: A, x2: A) -> A:
 # provided in this version only to demonstrate the results are consistent with
 # the non-batched version.
 def dist(x1: A, x2: A, batch: bool = False) -> A:
+    x1, x2 = batch_centering(x1, x2)
     d = batched_diffs(x1, x2) if batch else diffs(x1, x2)
     d = np.square(d)
     sq_diffs: A = np.sum(d, axis=-1)
@@ -38,6 +48,7 @@ def dist(x1: A, x2: A, batch: bool = False) -> A:
 
 # NOTE: As above
 def dist2(x1: A, x2: A, batch: bool = False) -> A:
+    x1, x2 = batch_centering(x1, x2)
     d = batched_diffs(x1, x2) if batch else diffs(x1, x2)
     dists: A = np.linalg.norm(d, axis=-1)
 

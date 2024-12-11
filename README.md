@@ -73,10 +73,10 @@ them.
 Numerical stability becomes especially important when using single precision
 floats, hardware accelerators (GPUs), or JIT compiled functions.
 
-The implementations shown here are not optimized for numerical stability. One
-way to improve the stability is to pre-center the inputs before using them.
+One way to improve the stability is to pre-center the inputs before using them.
 Another step is to clamp the min values to a small positive number to avoid
 problems with small negative numbers if one computes square distances directly.
+The batch centering step is shown in `dist.py`.
 
 ## References
 
