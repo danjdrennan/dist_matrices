@@ -43,7 +43,13 @@ def dist(x1: A, x2: A, batch: bool = False) -> A:
     sq_diffs: A = np.sum(d, axis=-1)
     dists = np.sqrt(sq_diffs)
 
-    return dists
+    # NOTE: If these distances need to be used as part of an autodiff system
+    # (the main reason to hand-roll this), then you need to bound the distances
+    # away from zero with a small bias. Note at the tolerances of this code's
+    # test that this has no consequence.
+    clamped_distances = np.where(dists == 0, 1e-8, dists)
+
+    return clamped_distances
 
 
 # NOTE: As above
@@ -52,7 +58,10 @@ def dist2(x1: A, x2: A, batch: bool = False) -> A:
     d = batched_diffs(x1, x2) if batch else diffs(x1, x2)
     dists: A = np.linalg.norm(d, axis=-1)
 
-    return dists
+    # NOTE: As with lines 46--49
+    clamped_distances = np.where(dists == 0, 1e-8, dists)
+
+    return clamped_distances
 
 
 def cmp_dists(
